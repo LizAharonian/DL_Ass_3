@@ -7,8 +7,10 @@ from time import time
 EMBED_DIM = 100
 LSTM_DIM = 100
 OUT_DIM = 2
-EPOCHS = 3
-VOCAB ="0123456789abcd"
+EPOCHS = 10
+VOCAB ="0123456789abcdefghijklmnopqrstuvwxyz#"
+#VOCAB ="0123456789abcd" #todo: remove the # when submitting part 1
+
 VOCAB_SIZE = len(VOCAB)
 V2I = {char: i for i, char in enumerate(VOCAB)}
 
@@ -43,7 +45,7 @@ class LstmAcceptor(object):
 
     def __init__(self, in_dim, lstm_dim, out_dim, model):
         self.builder = dy.VanillaLSTMBuilder(1, in_dim, lstm_dim, model)
-        self.W       = model.add_parameters((out_dim, lstm_dim))
+        self.W = model.add_parameters((out_dim, lstm_dim))
 
     def __call__(self, sequence):
         lstm = self.builder.initial_state()
@@ -55,13 +57,10 @@ class LstmAcceptor(object):
 # our RNN model
 class RNNAcceptorModel(object):
 
-
-
-
     def __init__(self):
         self.m = dy.Model()
         self.trainer = dy.AdamTrainer(self.m)
-        self.embeds = self.m.add_lookup_parameters((VOCAB_SIZE, EMBED_DIM))
+        self.E = self.m.add_lookup_parameters((VOCAB_SIZE, EMBED_DIM))
         self.acceptor = LstmAcceptor(EMBED_DIM, LSTM_DIM, OUT_DIM, self.m)
 
 
@@ -75,7 +74,7 @@ class RNNAcceptorModel(object):
             rand.shuffle(train_data)
             for x, label in train_data:
                 dy.renew_cg()  # new computation graph
-                vecs = [self.embeds[V2I[char]] for char in x]
+                vecs = [self.E[V2I[char]] for char in x]
                 preds = self.acceptor(vecs)
                 loss = dy.pickneglogsoftmax(preds, label)
                 sum_of_losses += loss.npvalue()
@@ -92,7 +91,7 @@ class RNNAcceptorModel(object):
         sum_of_losses = 0.0
         for x, label in test_data:
             dy.renew_cg()  # new computation graph
-            vecs = [self.embeds[V2I[char]] for char in x]
+            vecs = [self.E[V2I[char]] for char in x]
             preds = self.acceptor(vecs)
             loss = dy.pickneglogsoftmax(preds, label)
             sum_of_losses += loss.npvalue()
@@ -104,7 +103,7 @@ class RNNAcceptorModel(object):
     def predict(self, w):
         # prediction code:
         dy.renew_cg()  # new computation graph
-        vecs = [self.embeds[V2I[char]] for char in w]
+        vecs = [self.E[V2I[char]] for char in w]
         preds = dy.softmax(self.acceptor(vecs))
         vals = preds.npvalue()
         return np.argmax(vals)
