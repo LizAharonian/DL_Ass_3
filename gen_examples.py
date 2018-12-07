@@ -2,9 +2,11 @@ import rstr
 from random import shuffle
 
 def main():
-    write_examples_to_file_from_regex(r'[1-9]+a+[1-9]+b+[1-9]+c+[1-9]+d+[1-9]+',
-                                      "pos_examples")
-    write_examples_to_file_from_regex(r'[1-9]+a+[1-9]+c+[1-9]+b+[1-9]+d+[1-9]+',
+    # write_examples_to_file_from_regex(r'[1-9]+a+[1-9]+b+[1-9]+c+[1-9]+d+[1-9]+',
+    #                                   "pos_examples")
+    write_examples_to_file_from_regex(r'[1-9]{1,50}a{1,50}[1-9]{1,50}b{1,50}[1-9]{1,50}c{1,50}[1-9]{1,50}d{1,50}[1-9]{1,50}',
+                                                                       "pos_examples")
+    write_examples_to_file_from_regex(r'[1-9]{1,50}a{1,50}[1-9]{1,50}c{1,50}[1-9]{1,50}b{1,50}[1-9]{1,50}d{1,50}[1-9]{1,50}',
                                       "neg_examples")
 
 def write_examples_to_file_from_regex(regex, file_name):
@@ -15,7 +17,6 @@ def write_examples_to_file_from_regex(regex, file_name):
         content = "\n".join(random_examples_list)
         file.write(content)
     create_test_and_train()
-    
 def create_test_and_train():
     examples_and_tags_list = []
     with open("neg_examples","r") as neg_file, open("pos_examples","r") as pos_file:
