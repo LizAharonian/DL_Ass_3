@@ -7,7 +7,7 @@ from time import time
 EMBED_DIM = 100
 LSTM_DIM = 100
 OUT_DIM = 2
-EPOCHS = 2
+EPOCHS = 10
 VOCAB ="0123456789abcdefghijklmnopqrstuvwxyz#"
 #VOCAB ="0123456789abcd" #todo: remove the # when submitting part 1
 
