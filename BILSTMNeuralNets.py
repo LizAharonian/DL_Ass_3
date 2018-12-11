@@ -40,7 +40,7 @@ class Model_A(object):
         self.second_backward_initialize = self.second_backward.initial_state()
 
         # get the word vectors. word_rep(...) returns a 128-dim vector expression for each word.
-        words_embedding_list = [self.E(ut.W2I[word]) for word in sentence]
+        words_embedding_list = [self.get_word_rep(word) for word in sentence]
         reversed_words_embedding_list = list(reversed(words_embedding_list))
 
         # first BILSTM layer, input: x1,x2,.. xn (word_embeding_list) output: b1,b2,b3,..bn
@@ -65,6 +65,12 @@ class Model_A(object):
         for b_tag_item in b_tag:
             result.append(self.W2 *(dy.tanh(self.W1*b_tag_item)))
         return result
+
+    def get_word_rep(self,word):
+        if word in ut.W2I.keys():
+            return self.E(ut.W2I[word])
+        else:
+            return self.E(ut.W2I[ut.UNK])
 
     def get_train_loss(self, sentence,tags):
         """
