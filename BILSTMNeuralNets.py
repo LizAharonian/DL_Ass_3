@@ -71,9 +71,9 @@ class Model_A(object):
 
     def get_word_rep(self,word):
         if word in self.W2I.keys():
-            return self.E(self.W2I[word])
+            return self.E[self.W2I[word]]
         else:
-            return self.E(self.W2I[UNK])
+            return self.E[self.W2I[UNK]]
 
     def get_train_loss(self, sentence,tags):
         """
@@ -109,3 +109,15 @@ class Model_B(Model_A):
         # calculate y1,y2,..yn and return yn
         return char_lstm_init.transduce(char_embedding)[-1]
 
+class Model_C(Model_A):
+    def __init__(self, model, w2i, t2i, p2i, s2i):
+        super(Model_C, self).__init__(model, w2i, t2i)
+
+        self.p2i = p2i
+        self.s2i = s2i
+
+        pref_embed_dim = 128
+        suff_embed_dim = 128
+
+        self.pref_lookup = model.add_lookup_parameters((p2i.size, pref_embed_dim))
+        self.suff_lookup = model.add_lookup_parameters((s2i.size, suff_embed_dim))
