@@ -3,12 +3,12 @@ import dynet as dy
 from utils_part_3 import UNK
 import numpy as np
 
-WORD_EMBEDDING_DIM = 100
-MLP_DIM = 40
-LSTM_DIM = 70
+WORD_EMBEDDING_DIM = 128
+MLP_DIM = 32
+LSTM_DIM = 64
 # for B model
 CHAR_EMBED_DIM = 20
-CHAR_LSTM_DIM = 130
+CHAR_LSTM_DIM = 128
 
 
 
