@@ -98,7 +98,7 @@ class Model_A(object):
 class Model_B(Model_A):
     def __init__(self,T2I, W2I,I2T,C2I):
         self.C2I = C2I
-        super(Model_B, self).__init__(T2I,W2I,C2I)
+        super(Model_B, self).__init__(T2I,W2I,I2T)
         self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBED_DIM))
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBED_DIM, CHAR_LSTM_DIM, self.model)
 
