@@ -7,8 +7,13 @@ WORD_EMBEDDING_DIM = 128
 MLP_DIM = 32
 LSTM_DIM = 64
 # for B model
-CHAR_EMBED_DIM = 20
+CHAR_EMBEDDING_DIM = 20
 CHAR_LSTM_DIM = 128
+
+# for model C
+PREF_EMBEDDING_DIM = 128
+SUFF_EMBEDDING_DIM = 128
+
 
 
 
@@ -99,8 +104,8 @@ class Model_B(Model_A):
     def __init__(self,T2I, W2I,I2T,C2I):
         self.C2I = C2I
         super(Model_B, self).__init__(T2I,W2I,I2T)
-        self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBED_DIM))
-        self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBED_DIM, CHAR_LSTM_DIM, self.model)
+        self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBEDDING_DIM))
+        self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBEDDING_DIM, CHAR_LSTM_DIM, self.model)
 
     def get_word_rep(self,word):
         char_indexes = [self.C2I[char] for char in word]
@@ -110,14 +115,26 @@ class Model_B(Model_A):
         return char_lstm_init.transduce(char_embedding)[-1]
 
 class Model_C(Model_A):
-    def __init__(self, model, w2i, t2i, p2i, s2i):
-        super(Model_C, self).__init__(model, w2i, t2i)
+    def __init__(self ,T2I, W2I,I2T, P2I, STI):
+        super(Model_C, self).__init__(T2I,W2I,I2T)
+        self.P2I = P2I
+        self.STI = STI
+        self.E_PREF = super.model.add_lookup_parameters((len(self.P2I), PREF_EMBEDDING_DIM))
+        self.E_SUFF = super.model.add_lookup_parameters((len(self.STI), SUFF_EMBEDDING_DIM))
 
-        self.p2i = p2i
-        self.s2i = s2i
+    def get_word_rep(self, word):
+        prefix = word[:3]
+        suffix = word[-3:]
 
-        pref_embed_dim = 128
-        suff_embed_dim = 128
+        if prefix in self.P2I.keys():
+            pref_indx = self.P2I[prefix]
+        else:
+            pref_indx = self.P2I[UNK[:3]]
 
-        self.pref_lookup = model.add_lookup_parameters((p2i.size, pref_embed_dim))
-        self.suff_lookup = model.add_lookup_parameters((s2i.size, suff_embed_dim))
+        if suffix in self.STI.keys():
+            suff_indx = self.STI[suffix]
+        else:
+            suff_indx = self.STI[UNK[-3:]]
+
+        return dy.esum([self.E_PREF[pref_indx], self.E_SUFF[suff_indx]])
+
