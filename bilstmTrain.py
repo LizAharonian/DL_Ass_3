@@ -1,5 +1,5 @@
 import sys
-import time
+from time import time
 import random as rand
 import dynet as dy
 import utils_part_3 as ut
