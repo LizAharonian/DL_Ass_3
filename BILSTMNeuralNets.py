@@ -82,7 +82,7 @@ class Model_A(object):
         result = self.build_graph(sentence)
         loss = 0.0
         for r, tag in zip(result, tags):
-            loss += dy.pickneglogsoftmax_batch(r,ut.T2I[tags])
+            loss += dy.pickneglogsoftmax(r,ut.T2I[tags])
         return loss
 
     def get_prediction_on_sentence(self, sentence):
@@ -95,10 +95,11 @@ class Model_A(object):
 class Model_B(Model_A):
     def __init__(self):
         super(Model_B, self).__init__()
+        self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBED_DIM))
+        self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBED_DIM, CHAR_LSTM_DIM, self.model)
 
-
-        self.E_CHAR = super.model.add_lookup_parameters((ut.C2I.size, CHAR_EMBED_DIM))
-
-        #self.char_LSTM = dy.LSTMBuilder(1, char_embed_dim, char_lstm_dim, model)
-
-
+    def get_word_rep(self,word):
+        if word in ut.W2I.keys():
+            return self.E(ut.W2I[word])
+        else:
+            return self.E(ut.W2I[ut.UNK])
