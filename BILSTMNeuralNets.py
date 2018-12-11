@@ -85,7 +85,7 @@ class Model_A(object):
         result = self.build_graph(sentence)
         loss = 0.0
         for r, tag in zip(result, tags):
-            loss += dy.pickneglogsoftmax(r,self.T2I[tags])
+            loss += dy.pickneglogsoftmax(r,self.T2I[tag])
         return loss
 
     def get_prediction_on_sentence(self, sentence):
