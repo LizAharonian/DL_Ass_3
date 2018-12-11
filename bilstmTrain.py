@@ -7,35 +7,43 @@ import BILSTMNeuralNets as nn
 
 EPOCHS = 5
 TRIANED_EXAMPLES_UNTIL_DEV = 500
+MODEL = "POS"
 
 
-def compute_accuracy(self, tagged_data):
-    good = bad = 0
-    for x, y in tagged_data:
-        pred = self.predict(x)
-        if pred == y:
-            good += 1
-        else:
-            bad += 1
-    return float(good) / float(len(tagged_data))
+def compute_accuracy(model, tagged_data, type):
+    good = 0
+    total_words = 0
+    for tagged_sentence in tagged_data:
+        words, tags = split_sentence_to_words_and_tags(tagged_sentence)
+        preds = model.get_prediction_on_sentence(words)
+        #preds = [ut.I2T[pred] for pred in preds]
+        for pred, tag in zip(preds, tags):
+            if type == "ner" and pred == "O" and tag == "O":
+                pass
+            elif pred == tag:
+                good += 1
+        total_words += len(words)
+    return float(good) / float(total_words) * 100
 
 def split_sentence_to_words_and_tags(tagged_sentence):
     words = [word for word, tag in tagged_sentence]
     tags = [tag for word, tag in tagged_sentence]
     return words, tags
 
-def dev(model, dev_data):
-    sum_of_losses = 0.0
-    for tagged_sentence in dev_data:
-        words, tags = split_sentence_to_words_and_tags(words, tags)
-        loss = model.get_train_loss()
-        sum_of_losses += loss.npvalue()
-        loss.backward()
-        # end of one iter on test data
-    print "dev results: " + "loss is: " + str(float(sum_of_losses) / len(dev_data)) + " accuracy is: " + \
-          str(compute_accuracy(dev_data))
+# def dev(model, dev_data):
+#     sum_of_losses = 0.0
+#     for tagged_sentence in dev_data:
+#         words, tags = split_sentence_to_words_and_tags(words, tags)
+#         preds = model.get_prediction_on_sentence(words)
+#         preds = [ut.I2T[pred] for pred in preds]
+#
+#         sum_of_losses += loss.npvalue()
+#         loss.backward()
+#         # end of one iter on test data
+#     print "dev results: " + "loss is: " + str(float(sum_of_losses) / len(dev_data)) + " accuracy is: " + \
+#           str(compute_accuracy(dev_data))
 
-def train(model, train_data, dev_data):
+def train(model, train_data, dev_data, type):
     trainer = dy.AdamTrainer(model.model)
     # training
     sum_of_losses = 0.0
@@ -53,12 +61,12 @@ def train(model, train_data, dev_data):
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
-                dev(model, dev_data)
+                print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type) + "%")
             i += 1
 
         # end of one iter on train data
         print "train epoch" + epoch + "results: " + "loss is: " + str(float(sum_of_losses) / len(train_data)) + \
-              " accuracy is: " + str(compute_accuracy(train_data))
+              " accuracy is: " + str(compute_accuracy(model, train_data, type) + "%")
         sum_of_losses = 0.0
     end_time = time()
     total_time = end_time - start_time
@@ -67,28 +75,29 @@ def train(model, train_data, dev_data):
 def save_model(model, model_file):
     model.model.save(model_file)
 
-def main(repr, train_file, model_file, dev_file=None):
+def main(repr, train_file, model_file, type, dev_file=None):
     train_data = ut.read_tagged_data(train_file)
+    ut.load_indexers()
     if dev_file:
-        dev_data = ut.read_tagged_data(dev_file)
+        dev_data = ut.read_tagged_data(dev_file, is_dev=True)
     else:
         eighty_prec_len = int(len(train_data) * 0.8)
         train_data, dev_data = train_data[:eighty_prec_len], train_data[eighty_prec_len:]
 
     # Initialize model
     if repr == "a":
-        model = nn.Model_A()
+        model = nn.Model_A(ut.T2I, ut.W2I, ut.I2T)
     elif repr == "b":
-        model = nn.Model_B()
+        model = nn.Model_B(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     elif repr == "c":
-        model = nn.Model_C()
+        model = nn.Model_C(ut.T2I, ut.W2I, ut.I2T, ut.PREFIXES, ut.SUFFIXES)
     elif repr == "d":
-        model = nn.Model_D()
+        model = nn.Model_D(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     else:
         print("Unvalid repr. Program quits")
         sys.exit(1)
 
-    train(model, train_data, dev_data)
+    train(model, train_data, dev_data, type)
     save_model(model, model_file)
 
 if __name__ == "__main__":
