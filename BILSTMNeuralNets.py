@@ -44,21 +44,21 @@ class Model_A(object):
 
         # get the word vectors. word_rep(...) returns a 128-dim vector expression for each word.
         words_embedding_list = [self.get_word_rep(word) for word in sentence]
-        reversed_words_embedding_list = list(reversed(words_embedding_list))
+        reversed_words_embedding_list = reversed(words_embedding_list)
 
         # first BILSTM layer, input: x1,x2,.. xn (word_embeding_list) output: b1,b2,b3,..bn
         forward_y = self.first_forward_initialize .transduce(words_embedding_list)
         backward_y = self.first_backward_initialize .transduce(reversed_words_embedding_list)
 
         # concat the results
-        b = [[y1,y2] for y1,y2 in zip(forward_y, backward_y)]
+        b = [dy.concatenate([y1,y2]) for y1,y2 in zip(forward_y, backward_y)]
 
         # second BILSTM layer, input: b1,b2..bn, output: b'1,b'2, b'3..
-        forward_y_tag = self.second_forward_initialize .transduce(b)
-        backward_y_tag = self.second_backward_initialize .transduce(list(reversed(b)))
+        forward_y_tag = self.second_forward_initialize.transduce(b)
+        backward_y_tag = self.second_backward_initialize.transduce(reversed(b))
 
         # concat the results
-        b_tag = [[y1_tag,y2_tag] for y1_tag, y2_tag in zip(forward_y_tag,backward_y_tag)]
+        b_tag = [dy.concatenate([y1_tag,y2_tag]) for y1_tag, y2_tag in zip(forward_y_tag,backward_y_tag)]
 
         # insert b_tag list into MLP
         W1 = dy.parameter(self.W1)
