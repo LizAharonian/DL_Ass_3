@@ -4,6 +4,8 @@ import random as rand
 import dynet as dy
 import utils_part_3 as ut
 import BILSTMNeuralNets as nn
+import cPickle as pickle
+from zipfile import ZipFile
 
 EPOCHS = 5
 TRIANED_EXAMPLES_UNTIL_DEV = 500
@@ -61,7 +63,7 @@ def train(model, train_data, dev_data, type):
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
-                print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type) + "%")
+                print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type)) + "%"
             i += 1
 
         # end of one iter on train data
@@ -73,7 +75,17 @@ def train(model, train_data, dev_data, type):
     print "total time: " + str(total_time)
 
 def save_model(model, model_file):
-    model.model.save(model_file)
+    with open(model_file, "wb") as output:
+        #pickle.dump(model, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.W2I, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.T2I, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.C2I, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.W2I, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.I2T, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.I2C, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.PREFIXES, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.SUFFIXES, output, pickle.HIGHEST_PROTOCOL)
+
 
 def main(repr, train_file, model_file, type, dev_file=None):
     train_data = ut.read_tagged_data(train_file)
@@ -97,7 +109,7 @@ def main(repr, train_file, model_file, type, dev_file=None):
         print("Unvalid repr. Program quits")
         sys.exit(1)
 
-    train(model, train_data, dev_data, type)
+    #train(model, train_data, dev_data, type)
     save_model(model, model_file)
 
 if __name__ == "__main__":
