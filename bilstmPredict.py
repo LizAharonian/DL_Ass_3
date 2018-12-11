@@ -13,12 +13,9 @@ def load_dicts_from_modelFile(modelFile):
             I2W = pickle.load(dicts_file)
             I2T = pickle.load(dicts_file)
             I2C = pickle.load(dicts_file)
-            W2I = pickle.load(dicts_file)
-            PREFIXES = pickle.load(dicts_file)
-            SUFFIXES = pickle.load(dicts_file)
-
-        with myzip.open("model.dy") as model_file:
-            pass
+            P2I = pickle.load(dicts_file)
+            S2I = pickle.load(dicts_file)
+            dicts += [W2I, T2I, C2I, I2W, I2T, ]
 
 def main(repr, modelFile, inputFile):
     load_modelFile(modelFile)

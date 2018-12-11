@@ -80,4 +80,4 @@ def load_indexers():
 
     # initialize prefixes and suffixes
     P2I = {word[:PREFIX_SIZE]:i for i, word in enumerate(WORDS_SET)}
-    S2I = {word[:-SUFFIX_SIZE]:i for i, word in enumerate(WORDS_SET)}
+    S2I = {word[-SUFFIX_SIZE:]:i for i, word in enumerate(WORDS_SET)}

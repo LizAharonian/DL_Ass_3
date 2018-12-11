@@ -82,8 +82,8 @@ def save_model(model, model_file):
         pickle.dump(ut.W2I, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.I2T, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.I2C, output, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(ut.PREFIXES, output, pickle.HIGHEST_PROTOCOL)
-        pickle.dump(ut.SUFFIXES, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.P2I, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(ut.S2I, output, pickle.HIGHEST_PROTOCOL)
 
     model.model.save("model.dy")
     zip_file = ZipFile(model_file, "w")
