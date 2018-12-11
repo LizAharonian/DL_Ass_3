@@ -52,8 +52,8 @@ class Model_A(object):
         reversed_words_embedding_list = reversed(words_embedding_list)
 
         # first BILSTM layer, input: x1,x2,.. xn (word_embeding_list) output: b1,b2,b3,..bn
-        forward_y = self.first_forward_initialize .transduce(words_embedding_list)
-        backward_y = self.first_backward_initialize .transduce(reversed_words_embedding_list)
+        forward_y = self.first_forward_initialize.transduce(words_embedding_list)
+        backward_y = self.first_backward_initialize.transduce(reversed_words_embedding_list)
 
         # concat the results
         b = [dy.concatenate([y1,y2]) for y1,y2 in zip(forward_y, backward_y)]
@@ -71,7 +71,7 @@ class Model_A(object):
 
         result = []
         for b_tag_item in b_tag:
-            result.append(self.W2 *(dy.tanh(self.W1*b_tag_item)))
+            result.append(W2 *(dy.tanh(W1*b_tag_item)))
         return result
 
     def get_word_rep(self,word):

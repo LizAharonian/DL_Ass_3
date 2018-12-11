@@ -47,7 +47,7 @@ def split_sentence_to_words_and_tags(tagged_sentence):
 #           str(compute_accuracy(dev_data))
 
 def train(model, train_data, dev_data, type):
-    trainer = dy.AdamTrainer(model.model)
+    trainer = model.trainer
     # training
     start_time = time()
     for epoch in range(EPOCHS):
