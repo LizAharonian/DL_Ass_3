@@ -8,8 +8,8 @@ EMBED_DIM = 100
 LSTM_DIM = 100
 OUT_DIM = 2
 EPOCHS = 10
-VOCAB ="0123456789abcdefghijklmnopqrstuvwxyz#"
-#VOCAB ="0123456789abcd" #todo: remove the # when submitting part 1
+#VOCAB ="0123456789abcdefghijklmnopqrstuvwxyz#"
+VOCAB ="0123456789abcd" #todo: remove the # when submitting part 1
 
 VOCAB_SIZE = len(VOCAB)
 V2I = {char: i for i, char in enumerate(VOCAB)}
