@@ -109,8 +109,8 @@ def main(repr, train_file, model_file, type, dev_file=None):
         print("Unvalid repr. Program quits")
         sys.exit(1)
 
-    #train(model, train_data, dev_data, type)
-    save_model(model, model_file)
+    train(model, train_data, dev_data, type)
+    #save_model(model, model_file)
 
 if __name__ == "__main__":
     main(*sys.argv[1:])

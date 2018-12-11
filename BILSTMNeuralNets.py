@@ -104,7 +104,7 @@ class Model_B(Model_A):
     def __init__(self,T2I, W2I,I2T,C2I):
         self.C2I = C2I
         super(Model_B, self).__init__(T2I,W2I,I2T)
-        self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBEDDING_DIM))
+        self.E_CHAR = self.model.add_lookup_parameters((len(C2I), CHAR_EMBEDDING_DIM))
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBEDDING_DIM, CHAR_LSTM_DIM, self.model)
 
     def get_word_rep(self,word):
@@ -119,8 +119,8 @@ class Model_C(Model_A):
         super(Model_C, self).__init__(T2I,W2I,I2T)
         self.P2I = P2I
         self.STI = STI
-        self.E_PREF = super.model.add_lookup_parameters((len(self.P2I), PREF_EMBEDDING_DIM))
-        self.E_SUFF = super.model.add_lookup_parameters((len(self.STI), SUFF_EMBEDDING_DIM))
+        self.E_PREF = self.model.add_lookup_parameters((len(self.P2I), PREF_EMBEDDING_DIM))
+        self.E_SUFF = self.model.add_lookup_parameters((len(self.STI), SUFF_EMBEDDING_DIM))
 
     def get_word_rep(self, word):
         prefix = word[:3]
@@ -142,8 +142,8 @@ class Model_D(Model_B):
     def __init__(self,T2I, W2I,I2T, C2I):
         super(Model_D, self).__init__(T2I, W2I,I2T,C2I)
         #params for linear layer
-        self.W = super.model.add_parameters((WORD_EMBEDDING_DIM, WORD_EMBEDDING_DIM * 2))
-        self.b = super.model.add_parameters((WORD_EMBEDDING_DIM))
+        self.W = self.model.add_parameters((WORD_EMBEDDING_DIM, WORD_EMBEDDING_DIM * 2))
+        self.b = self.model.add_parameters((WORD_EMBEDDING_DIM))
 
     def get_word_rep(self, word):
         # making params for linear layer
