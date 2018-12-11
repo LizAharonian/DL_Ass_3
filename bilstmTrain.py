@@ -75,8 +75,7 @@ def train(model, train_data, dev_data, type):
     print "total time: " + str(total_time)
 
 def save_model(model, model_file):
-    with open(model_file, "wb") as output:
-        #pickle.dump(model, output, pickle.HIGHEST_PROTOCOL)
+    with open("dicts.pkl", "wb") as output:
         pickle.dump(ut.W2I, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.T2I, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.C2I, output, pickle.HIGHEST_PROTOCOL)
@@ -85,6 +84,12 @@ def save_model(model, model_file):
         pickle.dump(ut.I2C, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.PREFIXES, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.SUFFIXES, output, pickle.HIGHEST_PROTOCOL)
+
+    model.model.save("model.dy")
+    zip_file = ZipFile(model_file, "w")
+    zip_file.write("dicts.pkl")
+    zip_file.write("model.dy")
+    zip_file.close()
 
 
 def main(repr, train_file, model_file, type, dev_file=None):
@@ -102,7 +107,7 @@ def main(repr, train_file, model_file, type, dev_file=None):
     elif repr == "b":
         model = nn.Model_B(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     elif repr == "c":
-        model = nn.Model_C(ut.T2I, ut.W2I, ut.I2T, ut.PREFIXES, ut.SUFFIXES)
+        model = nn.Model_C(ut.T2I, ut.W2I, ut.I2T, ut.P2I, ut.S2I)
     elif repr == "d":
         model = nn.Model_D(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     else:

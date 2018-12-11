@@ -10,8 +10,8 @@ C2I = {}
 I2W = {}
 I2T = {}
 I2C = {}
-PREFIXES = {}
-SUFFIXES = {}
+P2I = {}
+S2I = {}
 
 def read_tagged_data(file_name, is_dev = False):
     """
@@ -69,8 +69,8 @@ def load_indexers():
     load_indexers function.
     creates our dicts that helps us to manage the data.
     """
-    global  WORDS_SET, W2I, TAGS_SET, T2I, CHARS_SET, C2I, PREFIX_SIZE, SUFFIX_SIZE, PREFIXES, SUFFIXES
-    global I2W, I2T, I2C
+    global  WORDS_SET, W2I, TAGS_SET, T2I, CHARS_SET, C2I, PREFIX_SIZE, SUFFIX_SIZE, P2I, S2I
+    global I2W, I2T, I2C, P2I, S2I
     W2I = {word : i for i, word in enumerate(WORDS_SET)}
     I2W = {i : word for word, i in W2I.iteritems()}
     T2I = {tag : i for i, tag in enumerate(TAGS_SET)}
@@ -79,5 +79,5 @@ def load_indexers():
     I2C = {i : word for word, i in C2I.iteritems()}
 
     # initialize prefixes and suffixes
-    PREFIXES = {word[:PREFIX_SIZE] for word in WORDS_SET}
-    SUFFIXES = {word[:-SUFFIX_SIZE] for word in WORDS_SET}
+    P2I = {i:word[:PREFIX_SIZE] for i, word in enumerate(WORDS_SET)}
+    S2I = {i:word[:-SUFFIX_SIZE] for i, word in enumerate(WORDS_SET)}
