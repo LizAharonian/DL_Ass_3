@@ -1,4 +1,5 @@
 import sys
+import os
 from time import time
 import random as rand
 import numpy as np
@@ -64,14 +65,12 @@ def train(model, train_data, dev_data, type):
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
-                avg_loss = np.average(losses_list)
-                print avg_loss
                 print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type)) + "%"
             i += 1
         avg_loss = np.average(losses_list)
         # end of one iter on train data
-        print "train epoch" + epoch + "results: " + "loss is: " + str(float(avg_loss) / len(train_data)) + \
-              " accuracy is: " + str(compute_accuracy(model, train_data, type) + "%")
+        print "train epoch" + str(epoch) + "results: " + "loss is: " + str(float(avg_loss) / len(train_data)) + \
+              " accuracy is: " + str(compute_accuracy(model, train_data, type)) + "%"
     end_time = time()
     total_time = end_time - start_time
     print "total time: " + str(total_time)
@@ -92,6 +91,9 @@ def save_model(model, model_file):
     zip_file.write("dicts.pkl")
     zip_file.write("model.dy")
     zip_file.close()
+
+    os.remove("dicts.pkl")
+    os.remove("model.dy")
 
 
 def main(repr, train_file, model_file, type, dev_file=None):
@@ -116,8 +118,8 @@ def main(repr, train_file, model_file, type, dev_file=None):
         print("Unvalid repr. Program quits")
         sys.exit(1)
 
-    train(model, train_data, dev_data, type)
-    #save_model(model, model_file)
+    #train(model, train_data, dev_data, type)
+    save_model(model, model_file)
 
 if __name__ == "__main__":
     main(*sys.argv[1:])
