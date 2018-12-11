@@ -6,6 +6,10 @@ import numpy as np
 WORD_EMBEDDING_DIM = 100
 MLP_DIM = 40
 LSTM_DIM = 70
+# for B model
+CHAR_EMBED_DIM = 20
+CHAR_LSTM_DIM = 130
+
 
 
 class Model_A(object):
@@ -13,7 +17,7 @@ class Model_A(object):
         self.model = dy.ParameterCollection()
         self.trainer = dy.AdamTrainer(self.model)
         # word embedding matrix
-        self.E = self.model.add_lookup_parameters((ut.W2I.size, WORD_EMBEDDING_DIM))
+        self.E = self.model.add_lookup_parameters((len(ut.W2I), WORD_EMBEDDING_DIM))
 
         # first BILSTM - input: x1,..xn, output: b1,..bn
         self.first_forward = dy.LSTMBuilder(1, WORD_EMBEDDING_DIM, LSTM_DIM, self.model)
@@ -25,7 +29,7 @@ class Model_A(object):
 
         # MLP mult on: b'1,..b'n
         self.W1 = self.model.add_parameters((MLP_DIM, WORD_EMBEDDING_DIM))
-        self.W2 = self.model.add_parameters((ut.T2I.size, MLP_DIM))
+        self.W2 = self.model.add_parameters((len(ut.T2I), MLP_DIM))
 
     def build_graph(self, sentence):
         dy.renew_cg()
@@ -69,7 +73,7 @@ class Model_A(object):
         :param tags: the relevant tags of the sentence.
         :return:
         """
-        result = self.build_graph()
+        result = self.build_graph(sentence)
         loss = 0.0
         for r, tag in zip(result, tags):
             loss += dy.pickneglogsoftmax_batch(r,ut.T2I[tags])
@@ -80,7 +84,15 @@ class Model_A(object):
         probs = [(dy.softmax(r)).npvalue() for r in results]
         tags = [ut.T2I[np.argmax(pro)] for pro in probs]
         return tags
-    
 
+    
+class Model_B(Model_A):
+    def __init__(self):
+        super(Model_B, self).__init__()
+
+
+        self.E_CHAR = super.model.add_lookup_parameters((ut.C2I.size, CHAR_EMBED_DIM))
+
+        #self.char_LSTM = dy.LSTMBuilder(1, char_embed_dim, char_lstm_dim, model)
 
 
