@@ -79,5 +79,7 @@ def load_indexers():
     I2C = {i : word for word, i in C2I.iteritems()}
 
     # initialize prefixes and suffixes
-    P2I = {word[:PREFIX_SIZE]:i for i, word in enumerate(WORDS_SET)}
-    S2I = {word[-SUFFIX_SIZE:]:i for i, word in enumerate(WORDS_SET)}
+    prefixes = {word[:PREFIX_SIZE] for word in WORDS_SET}
+    suffixes = {word[-SUFFIX_SIZE:] for word in WORDS_SET}
+    P2I = {word[:PREFIX_SIZE]:i for i, word in enumerate(prefixes)}
+    S2I = {word[-SUFFIX_SIZE:]:i for i, word in enumerate(suffixes)}

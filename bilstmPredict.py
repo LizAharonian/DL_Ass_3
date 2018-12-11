@@ -17,9 +17,10 @@ def load_dicts_from_modelFile(modelFile):
             P2I = pickle.load(dicts_file)
             S2I = pickle.load(dicts_file)
             dicts += [W2I, T2I, C2I, I2W, I2T, I2C, P2I, S2I]
+    return dicts
 
 def main(repr, modelFile, inputFile):
-    load_dicts_from_modelFile(modelFile)
+    dicts = load_dicts_from_modelFile(modelFile)
 
 
 
