@@ -1,5 +1,6 @@
 import sys
 import cPickle as pickle
+import BILSTMNeuralNets as nn
 from zipfile import ZipFile
 
 
@@ -15,10 +16,11 @@ def load_dicts_from_modelFile(modelFile):
             I2C = pickle.load(dicts_file)
             P2I = pickle.load(dicts_file)
             S2I = pickle.load(dicts_file)
-            dicts += [W2I, T2I, C2I, I2W, I2T, ]
+            dicts += [W2I, T2I, C2I, I2W, I2T, I2C, P2I, S2I]
 
 def main(repr, modelFile, inputFile):
-    load_modelFile(modelFile)
+    load_dicts_from_modelFile(modelFile)
+
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 import sys
 from time import time
 import random as rand
+import numpy as np
 import dynet as dy
 import utils_part_3 as ut
 import BILSTMNeuralNets as nn
@@ -48,9 +49,9 @@ def split_sentence_to_words_and_tags(tagged_sentence):
 def train(model, train_data, dev_data, type):
     trainer = dy.AdamTrainer(model.model)
     # training
-    sum_of_losses = 0.0
     start_time = time()
     for epoch in range(EPOCHS):
+        losses_list = []
         print "Epoch number " + str(epoch) + " started!"
         # training iter
         rand.shuffle(train_data)
@@ -58,18 +59,19 @@ def train(model, train_data, dev_data, type):
         for tagged_sentence in train_data:
             words, tags = split_sentence_to_words_and_tags(tagged_sentence)
             loss = model.get_train_loss(words, tags)
-            sum_of_losses += loss.npvalue()
+            losses_list.append(loss.value())
             loss.backward()
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
+                avg_loss = np.average(losses_list)
+                print avg_loss
                 print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type)) + "%"
             i += 1
-
+        avg_loss = np.average(losses_list)
         # end of one iter on train data
-        print "train epoch" + epoch + "results: " + "loss is: " + str(float(sum_of_losses) / len(train_data)) + \
+        print "train epoch" + epoch + "results: " + "loss is: " + str(float(avg_loss) / len(train_data)) + \
               " accuracy is: " + str(compute_accuracy(model, train_data, type) + "%")
-        sum_of_losses = 0.0
     end_time = time()
     total_time = end_time - start_time
     print "total time: " + str(total_time)
