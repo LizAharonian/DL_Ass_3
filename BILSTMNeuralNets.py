@@ -1,6 +1,6 @@
 
 import dynet as dy
-import utils_part_3 as ut
+from utils_part_3 import UNK
 import numpy as np
 
 WORD_EMBEDDING_DIM = 100
@@ -13,11 +13,14 @@ CHAR_LSTM_DIM = 130
 
 
 class Model_A(object):
-    def __init__(self):
+    def __init__(self, T2I, W2I,I2T):
+        self.T2I = T2I
+        self.W2I = W2I
+        self.I2T = I2T
         self.model = dy.ParameterCollection()
         self.trainer = dy.AdamTrainer(self.model)
         # word embedding matrix
-        self.E = self.model.add_lookup_parameters((len(ut.W2I), WORD_EMBEDDING_DIM))
+        self.E = self.model.add_lookup_parameters((len(self.W2I), WORD_EMBEDDING_DIM))
 
         # first BILSTM - input: x1,..xn, output: b1,..bn
         self.first_forward = dy.LSTMBuilder(1, WORD_EMBEDDING_DIM, LSTM_DIM, self.model)
@@ -29,7 +32,7 @@ class Model_A(object):
 
         # MLP mult on: b'1,..b'n
         self.W1 = self.model.add_parameters((MLP_DIM, WORD_EMBEDDING_DIM))
-        self.W2 = self.model.add_parameters((len(ut.T2I), MLP_DIM))
+        self.W2 = self.model.add_parameters((len(self.T2I), MLP_DIM))
 
     def build_graph(self, sentence):
         dy.renew_cg()
@@ -67,10 +70,10 @@ class Model_A(object):
         return result
 
     def get_word_rep(self,word):
-        if word in ut.W2I.keys():
-            return self.E(ut.W2I[word])
+        if word in self.W2I.keys():
+            return self.E(self.W2I[word])
         else:
-            return self.E(ut.W2I[ut.UNK])
+            return self.E(self.W2I[UNK])
 
     def get_train_loss(self, sentence,tags):
         """
@@ -82,24 +85,25 @@ class Model_A(object):
         result = self.build_graph(sentence)
         loss = 0.0
         for r, tag in zip(result, tags):
-            loss += dy.pickneglogsoftmax(r,ut.T2I[tags])
+            loss += dy.pickneglogsoftmax(r,self.T2I[tags])
         return loss
 
     def get_prediction_on_sentence(self, sentence):
         results = self.build_graph(sentence)
         probs = [(dy.softmax(r)).npvalue() for r in results]
-        tags = [ut.I2T[np.argmax(pro)] for pro in probs]
+        tags = [self.I2T[np.argmax(pro)] for pro in probs]
         return tags
 
     
 class Model_B(Model_A):
-    def __init__(self):
-        super(Model_B, self).__init__()
+    def __init__(self,T2I, W2I,I2T,C2I):
+        self.C2I = C2I
+        super(Model_B, self).__init__(T2I,W2I,C2I)
         self.E_CHAR = super.model.add_lookup_parameters((len(ut.C2I), CHAR_EMBED_DIM))
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBED_DIM, CHAR_LSTM_DIM, self.model)
 
     def get_word_rep(self,word):
-        char_indexes = [ut.C2I[char] for char in word]
+        char_indexes = [self.C2I[char] for char in word]
         char_embedding = [self.E_CHAR[indx] for indx in char_indexes]
         char_lstm_init = self.char_LSTM.initial_state()
         # calculate y1,y2,..yn and return yn
