@@ -65,7 +65,6 @@ class RNNAcceptorModel(object):
 
 
     def train(self,train_data,test_data):
-        # training code
         sum_of_losses = 0.0
         start_time = time()
         for epoch in range(EPOCHS):
@@ -101,7 +100,6 @@ class RNNAcceptorModel(object):
             self.compute_accuracy(test_data))
 
     def predict(self, w):
-        # prediction code:
         dy.renew_cg()  # new computation graph
         vecs = [self.E[V2I[char]] for char in w]
         preds = dy.softmax(self.acceptor(vecs))
