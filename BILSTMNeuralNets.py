@@ -138,3 +138,23 @@ class Model_C(Model_A):
 
         return dy.esum([self.E_PREF[pref_indx], self.E_SUFF[suff_indx]])
 
+class Model_D(Model_B):
+    def __init__(self,T2I, W2I,I2T, C2I):
+        super(Model_D, self).__init__(T2I, W2I,I2T,C2I)
+        #params for linear layer
+        self.W = super.model.add_parameters((WORD_EMBEDDING_DIM, WORD_EMBEDDING_DIM * 2))
+        self.b = super.model.add_parameters((WORD_EMBEDDING_DIM))
+
+    def get_word_rep(self, word):
+        # making params for linear layer
+        W = dy.parameter(self.pW)
+        b = dy.parameter(self.pb)
+
+        word_embeddings_from_a_model = Model_A.word_rep(self, word)
+        word_embeddings_from_b_model = Model_B.word_rep(self, word)
+
+        word_embeddings_d_model = dy.concatenate([word_embeddings_from_a_model, word_embeddings_from_b_model])
+
+        # linear layer calculations
+        res = ((W * word_embeddings_d_model) + b)
+        return res
