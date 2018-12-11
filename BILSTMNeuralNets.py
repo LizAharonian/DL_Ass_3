@@ -88,7 +88,7 @@ class Model_A(object):
     def get_prediction_on_sentence(self, sentence):
         results = self.build_graph(sentence)
         probs = [(dy.softmax(r)).npvalue() for r in results]
-        tags = [ut.T2I[np.argmax(pro)] for pro in probs]
+        tags = [ut.I2T[np.argmax(pro)] for pro in probs]
         return tags
 
     
