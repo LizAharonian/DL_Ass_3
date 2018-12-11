@@ -88,10 +88,10 @@ class Model_A(object):
         :return:
         """
         result = self.build_graph(sentence)
-        loss = 0.0
+        loss = []
         for r, tag in zip(result, tags):
-            loss += dy.pickneglogsoftmax(r,self.T2I[tag])
-        return loss
+            loss.append(dy.pickneglogsoftmax(r,self.T2I[tag]))
+        return dy.esum(loss)
 
     def get_prediction_on_sentence(self, sentence):
         results = self.build_graph(sentence)
