@@ -42,6 +42,7 @@ def read_tagged_data(file_name, is_dev = False):
     if not is_dev:
         TAGS_SET.add(UNK)
         WORDS_SET.add(UNK)
+        CHARS_SET.add(UNK)
     return tagged_sentences
 
 def read_not_tagged_data(file_name):

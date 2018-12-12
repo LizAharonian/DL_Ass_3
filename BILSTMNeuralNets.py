@@ -108,7 +108,12 @@ class Model_B(Model_A):
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBEDDING_DIM, CHAR_LSTM_DIM, self.model)
 
     def get_word_rep(self,word):
-        char_indexes = [self.C2I[char] for char in word]
+        char_indexes = []
+        for char in word:
+            if char in self.C2I:
+                char_indexes.append(self.C2I[char])
+            else:
+                char_indexes.append(self.C2I[UNK])
         char_embedding = [self.E_CHAR[indx] for indx in char_indexes]
         char_lstm_init = self.char_LSTM.initial_state()
         # calculate y1,y2,..yn and return yn

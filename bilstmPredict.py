@@ -3,7 +3,7 @@ import os
 import cPickle as pickle
 import BILSTMNeuralNets as nn
 from zipfile import ZipFile
-
+import utils_part_3 as ut
 
 def load_dicts_from_modelFile():
     dicts = []
@@ -22,7 +22,22 @@ def load_dicts_from_modelFile():
 def load_model(model):
         model.model.populate("model.dy")
 
-def main(repr, modelFile, inputFile):
+def get_test_pred(test_data, model):
+    pred_list = []
+    for sentence in test_data:
+        pred = model.get_prediction_on_sentence(sentence)
+        pred_list.append((sentence,pred))
+    return  pred_list
+
+def write_test_pred(preds_list, data_type):
+    with open("test4."+data_type, 'w') as test_pred_file:
+        for item in preds_list:
+            sentence, tags = item
+            for w,tag in zip(sentence,tags):
+                test_pred_file.write(w + " " + tag + "\n")
+            test_pred_file.write("\n")
+
+def main(repr, modelFile, inputFile, type):
     with ZipFile(modelFile) as myzip:
         myzip.extractall(os.getcwd())
     W2I, T2I, C2I, I2W, I2T, I2C, P2I, S2I = load_dicts_from_modelFile()
@@ -42,10 +57,10 @@ def main(repr, modelFile, inputFile):
     load_model(model)
     os.remove("dicts.pkl")
     os.remove("model.dy")
-
-
+    test_data = ut.read_not_tagged_data(inputFile)
+    preds_list = get_test_pred(test_data, model)
+    write_test_pred(preds_list, type)
 
 if __name__ == "__main__":
     main(*sys.argv[1:])
-
 
