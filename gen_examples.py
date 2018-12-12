@@ -4,9 +4,9 @@ from random import shuffle
 def main():
     # write_examples_to_file_from_regex(r'[1-9]+a+[1-9]+b+[1-9]+c+[1-9]+d+[1-9]+',
     #                                   "pos_examples")
-    write_examples_to_file_from_regex(r'[1-9]{1,10}a{1,10}[1-9]{1,10}b{1,10}[1-9]{1,10}c{1,10}[1-9]{1,10}d{1,10}[1-9]{1,10}',
+    write_examples_to_file_from_regex(r'[1-9]{1,20}a{1,20}[1-9]{1,20}b{1,20}[1-9]{1,20}c{1,20}[1-9]{1,20}d{1,20}[1-9]{1,20}',
                                                                        "pos_examples")
-    write_examples_to_file_from_regex(r'[1-9]{1,10}a{1,10}[1-9]{1,10}c{1,10}[1-9]{1,10}b{1,10}[1-9]{1,10}d{1,10}[1-9]{1,10}',
+    write_examples_to_file_from_regex(r'[1-9]{1,20}a{1,20}[1-9]{1,20}c{1,20}[1-9]{1,20}b{1,20}[1-9]{1,20}d{1,20}[1-9]{1,20}',
                                       "neg_examples")
     create_test_and_train()
 
