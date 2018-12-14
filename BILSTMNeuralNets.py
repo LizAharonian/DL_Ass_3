@@ -19,6 +19,13 @@ SUFF_EMBEDDING_DIM = 128
 
 class Model_A(object):
     def __init__(self, T2I, W2I,I2T):
+        """
+        constructor.
+        the params are all dics from the utils.
+        :param T2I: 
+        :param W2I: 
+        :param I2T: 
+        """
         self.T2I = T2I
         self.W2I = W2I
         self.I2T = I2T
@@ -40,6 +47,11 @@ class Model_A(object):
         self.W2 = self.model.add_parameters((len(self.T2I), MLP_DIM))
 
     def build_graph(self, sentence):
+        """
+        build_graph function.
+        :param sentence: input sentence.
+        :return: 
+        """
         dy.renew_cg()
         # initialize the bilstm layers
         self.first_forward_initialize = self.first_forward.initial_state()
@@ -75,6 +87,11 @@ class Model_A(object):
         return result
 
     def get_word_rep(self,word):
+        """
+        get_word_rep function.
+        :param word: requested word.
+        :return: 
+        """
         if word in self.W2I.keys():
             return self.E[self.W2I[word]]
         else:
@@ -94,6 +111,11 @@ class Model_A(object):
         return dy.esum(loss)
 
     def get_prediction_on_sentence(self, sentence):
+        """
+        get_prediction_on_sentence function.
+        :param sentence: sentence to be tagged.
+        :return: 
+        """
         results = self.build_graph(sentence)
         probs = [(dy.softmax(r)).npvalue() for r in results]
         tags = [self.I2T[np.argmax(pro)] for pro in probs]
@@ -102,12 +124,25 @@ class Model_A(object):
     
 class Model_B(Model_A):
     def __init__(self,T2I, W2I,I2T,C2I):
+        """
+        constructor.
+        all params are dicts from utils.
+        :param T2I: 
+        :param W2I: 
+        :param I2T: 
+        :param C2I: 
+        """
         self.C2I = C2I
         super(Model_B, self).__init__(T2I,W2I,I2T)
         self.E_CHAR = self.model.add_lookup_parameters((len(C2I), CHAR_EMBEDDING_DIM))
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBEDDING_DIM, CHAR_LSTM_DIM, self.model)
 
     def get_word_rep(self,word):
+        """
+        get_word_rep function.
+        :param word: requested word.
+        :return: 
+        """
         char_indexes = []
         for char in word:
             if char in self.C2I:
@@ -121,6 +156,15 @@ class Model_B(Model_A):
 
 class Model_C(Model_A):
     def __init__(self ,T2I, W2I,I2T, P2I, STI):
+        """
+        constructor.
+        all dicts are from utils.
+        :param T2I: 
+        :param W2I: 
+        :param I2T: 
+        :param P2I: 
+        :param STI: 
+        """
         super(Model_C, self).__init__(T2I,W2I,I2T)
         self.P2I = P2I
         self.STI = STI
@@ -128,6 +172,11 @@ class Model_C(Model_A):
         self.E_SUFF = self.model.add_lookup_parameters((len(self.STI), SUFF_EMBEDDING_DIM))
 
     def get_word_rep(self, word):
+        """
+        get_word_rep function.
+        :param word: requested word.
+        :return:
+        """
         prefix = word[:3]
         suffix = word[-3:]
 
@@ -145,12 +194,25 @@ class Model_C(Model_A):
 
 class Model_D(Model_B):
     def __init__(self,T2I, W2I,I2T, C2I):
+        """
+        constructor.
+        all dicts are from utils.
+        :param T2I:
+        :param W2I:
+        :param I2T:
+        :param C2I:
+        """
         super(Model_D, self).__init__(T2I, W2I,I2T,C2I)
         #params for linear layer
         self.W = self.model.add_parameters((WORD_EMBEDDING_DIM, WORD_EMBEDDING_DIM * 2))
         self.b = self.model.add_parameters((WORD_EMBEDDING_DIM))
 
     def get_word_rep(self, word):
+        """
+        get_word_rep function.
+        :param word: requested word.
+        :return:
+        """
         # making params for linear layer
         W = dy.parameter(self.pW)
         b = dy.parameter(self.pb)
