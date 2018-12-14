@@ -5,7 +5,14 @@ import BILSTMNeuralNets as nn
 from zipfile import ZipFile
 import utils_part_3 as ut
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 def load_dicts_from_modelFile():
+    """
+    loads the indexers of words, tags, chars, prefixes and suffixes sets from dicts.pkl
+    :return: indexers
+    """
     dicts = []
     with open("dicts.pkl") as dicts_file:
         W2I = pickle.load(dicts_file)
@@ -20,9 +27,19 @@ def load_dicts_from_modelFile():
     return dicts
 
 def load_model(model):
-        model.model.populate("model.dy")
+    """
+    Loads the model from model.dy to the model.
+    :param model:
+    """
+    model.model.populate("model.dy")
 
 def get_test_pred(test_data, model):
+    """
+    returns list of predictions for all the examples in the test_data
+    :param test_data: test data list of words (of a sentence)
+    :param model:
+    :return: predictions list
+    """
     pred_list = []
     for sentence in test_data:
         pred = model.get_prediction_on_sentence(sentence)
@@ -30,6 +47,11 @@ def get_test_pred(test_data, model):
     return  pred_list
 
 def write_test_pred(preds_list, data_type):
+    """
+    write the predictions to test4.data_type file
+    :param preds_list: list of lists in which every item is of the form (word,tag)
+    :param data_type: pos/ner
+    """
     with open("test4."+data_type, 'w') as test_pred_file:
         for item in preds_list:
             sentence, tags = item

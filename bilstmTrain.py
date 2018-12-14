@@ -9,19 +9,30 @@ import BILSTMNeuralNets as nn
 import cPickle as pickle
 from zipfile import ZipFile
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 EPOCHS = 5
 TRIANED_EXAMPLES_UNTIL_DEV = 500
 MODEL = "POS"
 
 
 def compute_accuracy(model, tagged_data, type):
+    """
+    Computes the accuracy of the model on the tagged data.
+    :param model: bi-lstm model
+    :param tagged_data: list of examples, each example (sentence) is a list of (word,tag)
+    :param type: pos/ner
+    :return: accuracy
+    """
     good = 0
     total_words = 0
     for tagged_sentence in tagged_data:
         words, tags = split_sentence_to_words_and_tags(tagged_sentence)
         preds = model.get_prediction_on_sentence(words)
-        #preds = [ut.I2T[pred] for pred in preds]
         for pred, tag in zip(preds, tags):
+            # we don't consider correct taggings of Other ("O") label on
+            # ner data as good predictions
             if type == "ner" and pred == "O" and tag == "O":
                 pass
             elif pred == tag:
@@ -30,24 +41,25 @@ def compute_accuracy(model, tagged_data, type):
     return float(good) / float(total_words) * 100
 
 def split_sentence_to_words_and_tags(tagged_sentence):
+    """
+    Split tagged_sentence which is a list of (word,tag) to two lists of: words, tags
+    :param tagged_sentence: tagged sentence example
+    :return: words, tags lists
+    """
     words = [word for word, tag in tagged_sentence]
     tags = [tag for word, tag in tagged_sentence]
     return words, tags
 
-# def dev(model, dev_data):
-#     sum_of_losses = 0.0
-#     for tagged_sentence in dev_data:
-#         words, tags = split_sentence_to_words_and_tags(words, tags)
-#         preds = model.get_prediction_on_sentence(words)
-#         preds = [ut.I2T[pred] for pred in preds]
-#
-#         sum_of_losses += loss.npvalue()
-#         loss.backward()
-#         # end of one iter on test data
-#     print "dev results: " + "loss is: " + str(float(sum_of_losses) / len(dev_data)) + " accuracy is: " + \
-#           str(compute_accuracy(dev_data))
-
 def train(model, train_data, dev_data, type, rep):
+    """
+    Trains the model over the train_data for EPOCHS epochs.
+    Every TRIANED_EXAMPLES_UNTIL_DEV, we let the model go over the dev_data
+    :param model: bi-lstm model
+    :param train_data: train data
+    :param dev_data: dev data
+    :param type: pos/ner
+    :param rep: a/b/c/d - model type
+    """
     trainer = model.trainer
     graph ={}
     # training
@@ -66,10 +78,13 @@ def train(model, train_data, dev_data, type, rep):
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
+                # get accuracy on the dev data
                 acc = str(compute_accuracy(model, dev_data, type))
                 print "dev results: " + " accuracy is: " +  acc + "%"
+                # save the accurcy result to the graph data
                 graph[i/100] = acc
             i += 1
+        # compute average loss
         avg_loss = np.average(losses_list)
         # end of one iter on train data
         print "train epoch" + str(epoch) + "results: " + "loss is: " + str(float(avg_loss) / len(train_data)) + \
@@ -77,10 +92,17 @@ def train(model, train_data, dev_data, type, rep):
     end_time = time()
     total_time = end_time - start_time
     print "total time: " + str(total_time)
+    # save the graph data to binary file
     with open(rep + "_model_" + type + ".pkl", "wb") as output:
         pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
 
 def save_model(model, model_file):
+    """
+    Saves the model and its dependencies to model_file
+    :param model: bi-lstm model
+    :param model_file: name of the file for saving the model
+    """
+    # save the indexers of words, tags, chars, prefixes and suffixes sets in dicts.pkl
     with open("dicts.pkl", "wb") as output:
         pickle.dump(ut.W2I, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.T2I, output, pickle.HIGHEST_PROTOCOL)
@@ -90,13 +112,14 @@ def save_model(model, model_file):
         pickle.dump(ut.I2C, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.P2I, output, pickle.HIGHEST_PROTOCOL)
         pickle.dump(ut.S2I, output, pickle.HIGHEST_PROTOCOL)
-
+    # save the dy-net model in model.dy
     model.model.save("model.dy")
     zip_file = ZipFile(model_file, "w")
+    # zip dicts.pkl and model.dy
     zip_file.write("dicts.pkl")
     zip_file.write("model.dy")
     zip_file.close()
-
+    # remove the files after writing them to the model_file zip
     os.remove("dicts.pkl")
     os.remove("model.dy")
 
@@ -106,6 +129,7 @@ def main(repr, train_file, model_file, type, dev_file=None):
     ut.load_indexers()
     if dev_file:
         dev_data = ut.read_tagged_data(dev_file, is_dev=True)
+    # take 20% of the train data for dev
     else:
         eighty_prec_len = int(len(train_data) * 0.8)
         train_data, dev_data = train_data[:eighty_prec_len], train_data[eighty_prec_len:]
