@@ -6,6 +6,8 @@ from zipfile import ZipFile
 import matplotlib.pyplot as plt
 from matplotlib.legend_handler import HandlerLine2D
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
 
 def load_dicts_from_modelFile(pkl_name):
     with open(pkl_name) as dicts_file:

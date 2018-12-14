@@ -4,6 +4,9 @@ import numpy as np
 import random as rand
 from time import time
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 EMBED_DIM = 100
 LSTM_DIM = 100
 OUT_DIM = 2

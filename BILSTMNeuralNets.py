@@ -3,6 +3,9 @@ import dynet as dy
 from utils_part_3 import UNK
 import numpy as np
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 WORD_EMBEDDING_DIM = 128
 MLP_DIM = 32
 LSTM_DIM = 64

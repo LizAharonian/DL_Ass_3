@@ -1,6 +1,9 @@
 import rstr
 from random import shuffle
 
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 def main():
     """
     main function.

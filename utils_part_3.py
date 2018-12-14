@@ -1,3 +1,6 @@
+STUDENT = {'name': "Liz Aharonian_Ori Ben Zaken",
+           'ID': "316584960_311492110"}
+
 UNK = "UUUNKKK"
 PREFIX_SIZE = 3
 SUFFIX_SIZE = 3
