@@ -47,8 +47,9 @@ def split_sentence_to_words_and_tags(tagged_sentence):
 #     print "dev results: " + "loss is: " + str(float(sum_of_losses) / len(dev_data)) + " accuracy is: " + \
 #           str(compute_accuracy(dev_data))
 
-def train(model, train_data, dev_data, type):
+def train(model, train_data, dev_data, type, rep):
     trainer = model.trainer
+    graph ={}
     # training
     start_time = time()
     for epoch in range(EPOCHS):
@@ -65,7 +66,9 @@ def train(model, train_data, dev_data, type):
             trainer.update()
 
             if i % TRIANED_EXAMPLES_UNTIL_DEV == 0:
-                print "dev results: " + " accuracy is: " + str(compute_accuracy(model, dev_data, type)) + "%"
+                acc = str(compute_accuracy(model, dev_data, type))
+                print "dev results: " + " accuracy is: " +  acc + "%"
+                graph[i/100] = acc
             i += 1
         avg_loss = np.average(losses_list)
         # end of one iter on train data
@@ -74,6 +77,8 @@ def train(model, train_data, dev_data, type):
     end_time = time()
     total_time = end_time - start_time
     print "total time: " + str(total_time)
+    with open(rep + "_model_" + type + ".pkl", "wb") as output:
+        pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
 
 def save_model(model, model_file):
     with open("dicts.pkl", "wb") as output:
@@ -118,7 +123,7 @@ def main(repr, train_file, model_file, type, dev_file=None):
         print("Unvalid repr. Program quits")
         sys.exit(1)
 
-    #train(model, train_data, dev_data, type)
+    train(model, train_data, dev_data, type, repr)
     save_model(model, model_file)
 
 if __name__ == "__main__":
