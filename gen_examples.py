@@ -2,8 +2,12 @@ import rstr
 from random import shuffle
 
 def main():
-    # write_examples_to_file_from_regex(r'[1-9]+a+[1-9]+b+[1-9]+c+[1-9]+d+[1-9]+',
-    #                                   "pos_examples")
+    """
+    main function.
+    runs the program.
+    creates the data for mission 1.
+    :return:
+    """
     write_examples_to_file_from_regex(r'[1-9]{1,20}a{1,20}[1-9]{1,20}b{1,20}[1-9]{1,20}c{1,20}[1-9]{1,20}d{1,20}[1-9]{1,20}',
                                                                        "pos_examples")
     write_examples_to_file_from_regex(r'[1-9]{1,20}a{1,20}[1-9]{1,20}c{1,20}[1-9]{1,20}b{1,20}[1-9]{1,20}d{1,20}[1-9]{1,20}',
@@ -12,13 +16,25 @@ def main():
 
 
 def write_examples_to_file_from_regex(regex, file_name):
+    """
+    write_examples_to_file_from_regex function.
+    :param regex: regular expression.
+    :param file_name: file name for saving the data.
+    :return:
+    """
     with open(file_name,"w") as file:
         random_examples_list = []
         for i in range(500):
             random_examples_list.append(rstr.xeger(regex))
         content = "\n".join(random_examples_list)
         file.write(content)
+
 def create_test_and_train():
+    """
+    create_test_and_train function.
+    splites the data.
+    :return:
+    """
     examples_and_tags_list = []
     with open("neg_examples","r") as neg_file, open("pos_examples","r") as pos_file:
         pos_content, neg_content = pos_file.readlines(),neg_file.readlines()

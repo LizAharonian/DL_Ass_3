@@ -2,6 +2,10 @@ import rstr
 from random import shuffle
 
 def main():
+    """
+    main function, runs the program and creates the requested examples for part 2.
+    :return:
+    """
     # w#w_reverse
     index = "1"
     write_examples_to_file_from_regex(r'[a-z]+',"pos_examples" + index, index)
@@ -23,6 +27,13 @@ def main():
 
 
 def write_examples_to_file_from_regex(regex, file_name,mission):
+    """
+    write the regex to file.
+    :param regex: regular expression.
+    :param file_name: file name for saving.
+    :param mission: 1,2,3
+    :return:
+    """
     with open(file_name,"w") as file:
         random_examples_list = []
         for i in range(500):
@@ -43,6 +54,12 @@ def write_examples_to_file_from_regex(regex, file_name,mission):
         file.write(content)
 
 def create_test_and_train(index):
+    """
+    create_test_and_train function.
+    splites the data.
+    :param index: 1,2,3
+    :return:
+    """
     examples_and_tags_list = []
     with open("neg_examples" + index,"r") as neg_file, open("pos_examples" + index,"r") as pos_file:
         pos_content, neg_content = pos_file.readlines(),neg_file.readlines()
