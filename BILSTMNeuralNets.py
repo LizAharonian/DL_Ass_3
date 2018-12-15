@@ -217,8 +217,8 @@ class Model_D(Model_B):
         :return:
         """
         # making params for linear layer
-        W = dy.parameter(self.pW)
-        b = dy.parameter(self.pb)
+        W = dy.parameter(self.W)
+        b = dy.parameter(self.b)
 
         word_embeddings_from_a_model = Model_A.word_rep(self, word)
         word_embeddings_from_b_model = Model_B.word_rep(self, word)
