@@ -220,8 +220,8 @@ class Model_D(Model_B):
         W = dy.parameter(self.W)
         b = dy.parameter(self.b)
 
-        word_embeddings_from_a_model = Model_A.word_rep(self, word)
-        word_embeddings_from_b_model = Model_B.word_rep(self, word)
+        word_embeddings_from_a_model = Model_A.get_word_rep(self, word)
+        word_embeddings_from_b_model = Model_B.get_word_rep(self, word)
 
         word_embeddings_d_model = dy.concatenate([word_embeddings_from_a_model, word_embeddings_from_b_model])
 
