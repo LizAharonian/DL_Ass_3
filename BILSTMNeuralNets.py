@@ -37,6 +37,7 @@ class Model_A(object):
             lr = 0.00014
         else:
             lr = 0.00045
+            
         self.trainer = dy.AdamTrainer(self.model,lr)
         # word embedding matrix
         self.E = self.model.add_lookup_parameters((len(self.W2I), WORD_EMBEDDING_DIM))
