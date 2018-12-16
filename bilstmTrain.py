@@ -146,7 +146,6 @@ def main(repr, train_file, model_file, type, dev_file=None):
     else:
         print("Unvalid repr. Program quits")
         sys.exit(1)
-
     train(model, train_data, dev_data, type, repr)
     save_model(model, model_file)
 
