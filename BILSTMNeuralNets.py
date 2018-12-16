@@ -21,7 +21,7 @@ SUFF_EMBEDDING_DIM = 128
 
 
 class Model_A(object):
-    def __init__(self, T2I, W2I,I2T):
+    def __init__(self, rep, T2I, W2I,I2T):
         """
         constructor.
         the params are all dics from the utils.
@@ -33,7 +33,11 @@ class Model_A(object):
         self.W2I = W2I
         self.I2T = I2T
         self.model = dy.ParameterCollection()
-        self.trainer = dy.AdamTrainer(self.model)
+        if rep == "d":
+            lr = 0.00014
+        else:
+            lr = 0.00045
+        self.trainer = dy.AdamTrainer(self.model,lr)
         # word embedding matrix
         self.E = self.model.add_lookup_parameters((len(self.W2I), WORD_EMBEDDING_DIM))
 
@@ -126,7 +130,7 @@ class Model_A(object):
 
     
 class Model_B(Model_A):
-    def __init__(self,T2I, W2I,I2T,C2I):
+    def __init__(self,rep,T2I, W2I,I2T,C2I):
         """
         constructor.
         all params are dicts from utils.
@@ -136,7 +140,7 @@ class Model_B(Model_A):
         :param C2I: 
         """
         self.C2I = C2I
-        super(Model_B, self).__init__(T2I,W2I,I2T)
+        super(Model_B, self).__init__(rep,T2I,W2I,I2T)
         self.E_CHAR = self.model.add_lookup_parameters((len(C2I), CHAR_EMBEDDING_DIM))
         self.char_LSTM = dy.LSTMBuilder(1, CHAR_EMBEDDING_DIM, CHAR_LSTM_DIM, self.model)
 
@@ -158,7 +162,7 @@ class Model_B(Model_A):
         return char_lstm_init.transduce(char_embedding)[-1]
 
 class Model_C(Model_A):
-    def __init__(self ,T2I, W2I,I2T, P2I, STI):
+    def __init__(self ,rep,T2I, W2I,I2T, P2I, STI):
         """
         constructor.
         all dicts are from utils.
@@ -168,7 +172,7 @@ class Model_C(Model_A):
         :param P2I: 
         :param STI: 
         """
-        super(Model_C, self).__init__(T2I,W2I,I2T)
+        super(Model_C, self).__init__(rep,T2I,W2I,I2T)
         self.P2I = P2I
         self.STI = STI
         self.E_PREF = self.model.add_lookup_parameters((len(self.P2I), PREF_EMBEDDING_DIM))
@@ -196,7 +200,7 @@ class Model_C(Model_A):
         return dy.esum([self.E_PREF[pref_indx], self.E_SUFF[suff_indx]])
 
 class Model_D(Model_B):
-    def __init__(self,T2I, W2I,I2T, C2I):
+    def __init__(self,rep,T2I, W2I,I2T, C2I):
         """
         constructor.
         all dicts are from utils.
@@ -205,7 +209,7 @@ class Model_D(Model_B):
         :param I2T:
         :param C2I:
         """
-        super(Model_D, self).__init__(T2I, W2I,I2T,C2I)
+        super(Model_D, self).__init__(rep,T2I, W2I,I2T,C2I)
         #params for linear layer
         self.W = self.model.add_parameters((WORD_EMBEDDING_DIM, WORD_EMBEDDING_DIM * 2))
         self.b = self.model.add_parameters((WORD_EMBEDDING_DIM))
