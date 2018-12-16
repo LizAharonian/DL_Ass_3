@@ -142,17 +142,16 @@ def main(repr, train_file, model_file, type, dev_file=None):
 
     # Initialize model
     if repr == "a":
-        model = nn.Model_A(ut.T2I, ut.W2I, ut.I2T)
+        model = nn.Model_A(repr,ut.T2I, ut.W2I, ut.I2T)
     elif repr == "b":
-        model = nn.Model_B(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
+        model = nn.Model_B(repr,ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     elif repr == "c":
-        model = nn.Model_C(ut.T2I, ut.W2I, ut.I2T, ut.P2I, ut.S2I)
+        model = nn.Model_C(repr,ut.T2I, ut.W2I, ut.I2T, ut.P2I, ut.S2I)
     elif repr == "d":
-        model = nn.Model_D(ut.T2I, ut.W2I, ut.I2T, ut.C2I)
+        model = nn.Model_D(repr,ut.T2I, ut.W2I, ut.I2T, ut.C2I)
     else:
         print("Unvalid repr. Program quits")
         sys.exit(1)
-
     train(model, train_data, dev_data, type, repr)
     save_model(model, model_file)
 
