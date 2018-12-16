@@ -99,8 +99,8 @@ def train(model, train_data, dev_data, type, rep):
     total_time = end_time - start_time
     print "total time: " + str(total_time)
     # save the graph data to binary file
-    with open(rep + "_model_" + type + ".pkl", "wb") as output:
-        pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
+    # with open(rep + "_model_" + type + ".pkl", "wb") as output:
+    #     pickle.dump(graph, output, pickle.HIGHEST_PROTOCOL)
 
 def save_model(model, model_file):
     """
