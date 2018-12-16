@@ -31,13 +31,19 @@ def compute_accuracy(model, tagged_data, type):
         words, tags = split_sentence_to_words_and_tags(tagged_sentence)
         preds = model.get_prediction_on_sentence(words)
         for pred, tag in zip(preds, tags):
+            if type == "pos":
+                if pred == tag:
+                    good += 1
+                total_words += 1
             # we don't consider correct taggings of Other ("O") label on
             # ner data as good predictions
-            if type == "ner" and pred == "O" and tag == "O":
-                pass
-            elif pred == tag:
-                good += 1
-        total_words += len(words)
+            if type == "ner":
+                if pred == "O" and tag == "O":
+                    continue
+                elif pred == tag:
+                    good += 1
+                total_words += 1
+        #total_words += len(words)
     return float(good) / float(total_words) * 100
 
 def split_sentence_to_words_and_tags(tagged_sentence):
@@ -64,12 +70,12 @@ def train(model, train_data, dev_data, type, rep):
     graph ={}
     # training
     start_time = time()
+    i = 1
     for epoch in range(EPOCHS):
         losses_list = []
         print "Epoch number " + str(epoch) + " started!"
         # training iter
         rand.shuffle(train_data)
-        i = 1
         for tagged_sentence in train_data:
             words, tags = split_sentence_to_words_and_tags(tagged_sentence)
             loss = model.get_train_loss(words, tags)
